@@ -1,0 +1,110 @@
+# This is the pattern to follow for all other libraries
+
+api_key = read the api key from the FORWARD_FINANCING_API_KEY environment var
+
+# Might have to build this as a Map in whatever language and convert to json
+# via some library
+json = {
+  "lead": {
+    "contacts_attributes": [
+      {
+        "first_name": "string",
+        "last_name": "string",
+        "email": "test@forwardfinancing.com",
+        "title": "string",
+        "born_on": "2015-01-01",
+        "home_phone": "6176781000",
+        "cell_phone": "6176781000",
+        "ssn": "234345566",
+        "ownership_date": "2015-01-01",
+        "current_address_attributes": {
+          "street1": "string",
+          "street2": "string",
+          "city": "string",
+          "state": "AK",
+          "zip": "00112"
+        }
+      }
+    ],
+    "account_attributes": {
+      "entity_type": "Sole Proprietor",
+      "name": "string",
+      "started_on": "2015-01-01",
+      "legal_name": "string",
+      "phone": "6176781000",
+      "email": "test@forwardfinancing.com",
+      "website": "string",
+      "fein": "string",
+      "monthly_revenue": "Less than $5,000",
+      "industry_name": "Laundry and dry cleaning services",
+      "current_address_attributes": {
+        "street1": "string",
+        "street2": "string",
+        "city": "string",
+        "state": "AK",
+        "zip": "00112"
+      }
+    },
+    "loan_attributes": {
+      "company_name": "string",
+      "daily_payment_amount": 0,
+      "balance": 0
+    },
+    "application_attributes": {
+      "has_current_loan": true,
+      "applicant_is_owner": true,
+      "loan_use": "Debt Refinancing",
+      "capital_needed": "string",
+      "owner_1_percent_ownership": 0,
+      "owner_2_percent_ownership": 0,
+      "reference_id": "string"
+    }
+  }
+}
+
+# Whatever http library and syntax
+response = HTTP.post(
+  url: "https://api-staging.forwardfinancing.com/v1/lead",
+  body: json,
+  headers: {
+    api_key: api_key
+    content_type: application/json
+  }
+)
+
+if response.status == 200
+  lead_id = response.body["id"]
+else
+  # Response body might have some more info about what went wrong
+  raise response.status
+
+# Open the file and read its contents into memory
+file_binary = File.open('forward_financing.txt').read
+
+response = HTTP.post(
+  url: "https://api-staging.forwardfinancing.com/v1/attachment?lead_id=#{lead_id}&filename=test.png",
+  body: file_binary,
+  headers: {
+    api_key: api_key
+  }
+)
+
+if response.status == 202
+  it worked!!
+
+### Post base64 string instead of binary
+
+file_string = Base64.encode_strict(
+  File.open('forward_financing.txt').read
+)
+
+response = HTTP.post(
+  url: "https://api-staging.forwardfinancing.com/v1/attachment?encoded=true&lead_id=#{lead_id}&filename=test.png",
+  body: file_string,
+  headers: {
+    api_key: api_key
+  }
+)
+
+if response.status == 202
+  it worked!!
