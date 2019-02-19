@@ -60,7 +60,7 @@ body = {
       "capital_needed": "10000",
       "owner_1_percent_ownership": 0,
       "owner_2_percent_ownership": 0,
-      "reference_id": "unique_string"
+      "reference_id": "unique_string_here"
     }
   }
 }
@@ -69,7 +69,7 @@ body = {
 # Make sure to specify the Content-Type for the /lead endpoint!
 headers = {
     "api_key": api_key,
-    "Content-Type": 'application/json'
+    "Content-Type": "application/json"
 }
 
 print(json.dumps(body, indent=4))
@@ -88,29 +88,28 @@ else:
     print(response.status_code, " - Error")
 
 # Send an attachment
-file_binary = open(f'{os.getcwd()}/forwardfinancing.py', 'rb')
+with open("forwardfinancing.py", "rb") as file_binary:
+    response = requests.post("https://api-staging.forwardfinancing.com/v1/attachment?lead_id={0}&filename=test.txt".format(lead_id),
+        headers={"api_key": api_key},
+        data=file_binary
+    )
+    print(response.json())
 
-response = requests.post(f'https://api-staging.forwardfinancing.com/v1/attachment?lead_id={lead_id}&filename=test.txt',
-    headers={"api_key": api_key},
-    data=file_binary
-)
-print(response.json())
+    if response.status_code == 202:
+        print("It worked!")
 
-# Send an attachment base64 encoded
-if response.status_code == 202:
-    print("It worked!")
+with open("forwardfinancing.py", "rb") as file_binary:
+    # Send an attachment base64 encoded
+    file_string = base64.b64encode(file_binary.read())
     
-file_string = base64.b64encode(open(f'{os.getcwd()}/forwardfinancing.py', 'rb').read())
+    # Send the same request, only with the encoded=true url param and the encoded
+    # body
+    response = requests.post("https://api-staging.forwardfinancing.com/v1/attachment?lead_id={0}&filename=test.txt&encoded=true".format(lead_id),
+        headers={"api_key": api_key},
+        data=file_string
+    )
 
-# Send the same request, only with the encoded=true url param and the encoded
-# body
-response = requests.post(f'https://api-staging.forwardfinancing.com/v1/attachment?lead_id={lead_id}&filename=test.txt&encoded=true',
-    headers={"api_key": api_key},
-    data=file_string
-)
+    print(response.json())
 
-print(response.json())
-
-if response.status_code == 202:
-    print("It worked!")
-    
+    if response.status_code == 202:
+        print("It worked!")
