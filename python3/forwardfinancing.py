@@ -3,7 +3,7 @@ import os
 import json
 import base64
 
-# Since you don't want to hard-code an api key, read it from environment var
+# Get api_key from your environment variables
 api_key = os.environ["FORWARD_FINANCING_API_KEY"]
 
 # sample payload
@@ -76,13 +76,13 @@ print(json.dumps(body, indent=4))
 
 response = requests.post("https://api-staging.forwardfinancing.com/v1/lead", headers=headers, data=json.dumps(body))
 
-# If the response was 201 it worked
+# If the response was 201, it worked
 if response.status_code == 201:
     print(response.json())
     lead_id = response.json()["id"]
     print("Lead id: ", lead_id)
 else:
-    # If the response was not 200, something went wrong
+    # If the response was not 201, something went wrong
     # The response body might have some info about what wrong in addition to the
     # status code
     print(response.status_code, " - Error")
