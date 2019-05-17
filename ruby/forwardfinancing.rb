@@ -5,6 +5,7 @@
 require 'json'
 require 'httparty'
 require 'base64'
+require 'faker'
 
 # Since you don't want to hard-code an api key, read it from environment var
 api_key = ENV["FORWARD_FINANCING_API_KEY"]
@@ -13,10 +14,10 @@ json = {
   "lead" => {
     "contacts_attributes" => [
       {
-        "first_name" => "string",
-        "last_name" => "string",
-        "email" => "test@forwardfinancing.com",
-        "title" => "string",
+        "first_name" => "#{Faker::Name.first_name}",
+        "last_name" => "#{Faker::Name.last_name}",
+        "email" => "#{Faker::Internet.email}",
+        "title" => "#{Faker::Name.prefix}",
         "born_on" => "2015-01-01",
         "home_phone" => "6176781000",
         "cell_phone" => "6176781000",
@@ -62,7 +63,7 @@ json = {
       "capital_needed" => "string",
       "owner_1_percent_ownership" => 0,
       "owner_2_percent_ownership" => 0,
-      "reference_id" => "string"
+      "reference_id" => "#{Faker::Number.between(1, 100000000)}"
     }
   }
 }.to_json
@@ -90,7 +91,7 @@ end
 
 # Send an attachment
 
-file_binary = File.open('forwardfinancing.rb', 'rb').read
+file_binary = File.open('./forwardfinancing.rb', 'rb').read
 
 response = HTTParty.post(
   "https://api-staging.forwardfinancing.com/v1/attachment?lead_id=#{lead_id}&filename=test.txt",
