@@ -14,61 +14,61 @@ json = {
   "lead" => {
     "contacts_attributes" => [
       {
-        "first_name" => "#{Faker::Name.first_name}",
-        "last_name" => "#{Faker::Name.last_name}",
-        "email" => "#{Faker::Internet.email}",
-        "title" => "#{Faker::Name.prefix}",
-        "born_on" => "#{Faker::Date.birthday(18, 65).strftime("%Y-%m-%d")}",
-        "home_phone" => "#{Faker::Number.number(10)}",
-        "cell_phone" => "#{Faker::Number.number(10)}",
-        "ssn" => "#{Faker::IDNumber.valid}",
-        "ownership_date" => "#{Faker::Date.birthday(18, 65).strftime("%Y-%m-%d")}",
+        "first_name" => Faker::Name.first_name,
+        "last_name" => Faker::Name.last_name,
+        "email" => Faker::Internet.email,
+        "title" => Faker::Name.prefix,
+        "born_on" => Faker::Date.birthday(18, 65).strftime("%Y-%m-%d"),
+        "home_phone" => Faker::Number.number(10),
+        "cell_phone" => Faker::Number.number(10),
+        "ssn" => Faker::IDNumber.valid,
+        "ownership_date" => Faker::Date.birthday(18, 65).strftime("%Y-%m-%d"),
         "current_address_attributes" => {
-          "street1" => "#{Faker::Address.street_address}",
-          "street2" => "#{Faker::Address.secondary_address}",
-          "city" => "#{Faker::Address.city}",
-          "state" => "#{Faker::Address.state_abbr}",
-          "zip" => "#{Faker::Address.zip}"
+          "street1" => Faker::Address.street_address,
+          "street2" => Faker::Address.secondary_address,
+          "city" => Faker::Address.city,
+          "state" => Faker::Address.state_abbr,
+          "zip" => Faker::Address.zip
         }
       }
     ],
     "account_attributes" => {
       "entity_type" => "Sole Proprietor",
-      "name" => "#{Faker::Company.unique.name}",
-      "started_on" => "#{Faker::Date.birthday(18, 65).strftime("%Y/%m/%d")}",
-      "legal_name" => "#{Faker::Company.unique.name + " legal name"}",
-      "phone" => "#{Faker::Number.number(10)}",
-      "email" => "#{Faker::Internet.email}",
-      "website" => "#{"www." + Faker::Name.middle_name + ".com"}",
-      "fein" => "#{Faker::Company.ein}",
+      "name" => Faker::Company.unique.name,
+      "started_on" => Faker::Date.birthday(18, 65).strftime("%Y/%m/%d"),
+      "legal_name" => Faker::Company.unique.name + " - legal name",
+      "phone" => Faker::Number.number(10),
+      "email" => Faker::Internet.email,
+      "website" => "www." + Faker::Name.middle_name + ".com",
+      "fein" => Faker::Company.ein,
       "monthly_revenue" => "Less than $5,000",
       "industry_name" => "Laundry and dry cleaning services",
       "current_address_attributes" => {
-        "street1" => "#{Faker::Address.street_address}",
-        "street2" => "#{Faker::Address.secondary_address}",
-        "city" => "#{Faker::Address.city}",
-        "state" => "#{Faker::Address.state_abbr}",
-        "zip" => "#{Faker::Address.zip}"
+        "street1" => Faker::Address.street_address,
+        "street2" => Faker::Address.secondary_address,
+        "city" => Faker::Address.city,
+        "state" => Faker::Address.state_abbr,
+        "zip" => Faker::Address.zip
       }
     },
     "loan_attributes" => {
-      "company_name" => "#{Faker::Company.name}",
-      "daily_payment_amount" => "#{Faker::Number.between(1, 5000)}",
-      "balance" => "#{Faker::Number.between(1000, 10000)}"
+      "company_name" => Faker::Company.name,
+      "daily_payment_amount" => Faker::Number.between(1, 5000),
+      "balance" => Faker::Number.between(1000, 10000)
     },
     "application_attributes" => {
       "has_current_loan" => true,
       "applicant_is_owner" => true,
       "loan_use" => "Debt Refinancing",
-      "capital_needed" => "#{Faker::Number.between(5000, 60000)}",
-      "owner_1_percent_ownership" => "#{Faker::Number.between(1, 99)}",
+      "capital_needed" => Faker::Number.between(5000, 60000),
+      "owner_1_percent_ownership" => Faker::Number.between(1, 99),
       "owner_2_percent_ownership" => 0,
-      "reference_id" => "#{Faker::Number.between(1, 100000000)}"
+      "reference_id" => Faker::Number.between(1, 100000000)
     }
   }
 }.to_json
 
-puts json
+puts "json: #{json}"
 
 response = HTTParty.post(
   "https://api-staging.forwardfinancing.com/v1/lead",
@@ -78,7 +78,8 @@ response = HTTParty.post(
   },
   body: json
 )
-puts response
+puts "response: #{response}"
+
 # If the response was 201 it worked
 if response.code == 201
   puts response.body
@@ -93,7 +94,7 @@ end
 
 # Send an attachment
 
-file_binary = File.open('./forwardfinancing.rb', 'rb').read
+file_binary = File.open('forwardfinancing.rb', 'rb').read
 
 response = HTTParty.post(
   "https://api-staging.forwardfinancing.com/v1/attachment?lead_id=#{lead_id}&filename=test.txt",
