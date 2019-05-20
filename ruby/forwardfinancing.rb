@@ -19,8 +19,8 @@ json = {
         "email" => Faker::Internet.email,
         "title" => Faker::Name.prefix,
         "born_on" => Faker::Date.birthday(18, 65).strftime("%Y-%m-%d"),
-        "home_phone" => Faker::Number.number(10),
-        "cell_phone" => Faker::Number.number(10),
+        "home_phone" => Faker::Number.number(10).to_s,
+        "cell_phone" => Faker::Number.number(10).to_s,
         "ssn" => Faker::IDNumber.valid,
         "ownership_date" => Faker::Date.birthday(18, 65).strftime("%Y-%m-%d"),
         "current_address_attributes" => {
@@ -36,10 +36,10 @@ json = {
       "entity_type" => "Sole Proprietor",
       "name" => Faker::Company.unique.name,
       "started_on" => Faker::Date.birthday(18, 65).strftime("%Y/%m/%d"),
-      "legal_name" => Faker::Company.unique.name + " - legal name",
+      "legal_name" => "#{Faker::Company.unique.name + " - legal name"}",
       "phone" => Faker::Number.number(10),
       "email" => Faker::Internet.email,
-      "website" => "www." + Faker::Name.middle_name + ".com",
+      "website" => "#{"www." + Faker::Name.middle_name + ".com"}",
       "fein" => Faker::Company.ein,
       "monthly_revenue" => "Less than $5,000",
       "industry_name" => "Laundry and dry cleaning services",
@@ -54,16 +54,17 @@ json = {
     "loan_attributes" => {
       "company_name" => Faker::Company.name,
       "daily_payment_amount" => Faker::Number.between(1, 5000),
-      "balance" => Faker::Number.between(1000, 10000)
+      "balance" => Faker::Number.between(1000, 10000).to_f
     },
     "application_attributes" => {
       "has_current_loan" => true,
       "applicant_is_owner" => true,
       "loan_use" => "Debt Refinancing",
-      "capital_needed" => Faker::Number.between(5000, 60000),
+      "capital_needed" => Faker::Number.between(5000, 60000).to_s,
       "owner_1_percent_ownership" => Faker::Number.between(1, 99),
       "owner_2_percent_ownership" => 0,
-      "reference_id" => Faker::Number.between(1, 100000000)
+      "reference_id" => Faker::Number.between(1, 100000000).to_s,
+      "notes" => Faker::TvShows::FamilyGuy.quote
     }
   }
 }.to_json
