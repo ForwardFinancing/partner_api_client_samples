@@ -5,6 +5,7 @@
 require 'json'
 require 'httparty'
 require 'base64'
+require 'faker'
 
 # Since you don't want to hard-code an api key, read it from environment var
 api_key = ENV["FORWARD_FINANCING_API_KEY"]
@@ -13,59 +14,62 @@ json = {
   "lead" => {
     "contacts_attributes" => [
       {
-        "first_name" => "string",
-        "last_name" => "string",
-        "email" => "test@forwardfinancing.com",
-        "title" => "string",
-        "born_on" => "2015-01-01",
-        "home_phone" => "6176781000",
-        "cell_phone" => "6176781000",
-        "ssn" => "234345566",
-        "ownership_date" => "2015-01-01",
+        "first_name" => Faker::Name.first_name,
+        "last_name" => Faker::Name.last_name,
+        "email" => Faker::Internet.email,
+        "title" => Faker::Name.prefix,
+        "born_on" => Faker::Date.birthday(18, 65).strftime("%Y-%m-%d"),
+        "home_phone" => Faker::Number.number(10).to_s,
+        "cell_phone" => Faker::Number.number(10).to_s,
+        "ssn" => Faker::IDNumber.valid,
+        "ownership_date" => Faker::Date.birthday(18, 65).strftime("%Y-%m-%d"),
         "current_address_attributes" => {
-          "street1" => "string",
-          "street2" => "string",
-          "city" => "string",
-          "state" => "AK",
-          "zip" => "00112"
+          "street1" => Faker::Address.street_address,
+          "street2" => Faker::Address.secondary_address,
+          "city" => Faker::Address.city,
+          "state" => Faker::Address.state_abbr,
+          "zip" => Faker::Address.zip
         }
       }
     ],
     "account_attributes" => {
       "entity_type" => "Sole Proprietor",
-      "name" => "string",
-      "started_on" => "2015-01-01",
-      "legal_name" => "string",
-      "phone" => "6176781000",
-      "email" => "test@forwardfinancing.com",
-      "website" => "string",
-      "fein" => "string",
+      "name" => Faker::Company.unique.name,
+      "started_on" => Faker::Date.birthday(18, 65).strftime("%Y/%m/%d"),
+      "legal_name" => "#{Faker::Company.unique.name + " - legal name"}",
+      "phone" => Faker::Number.number(10),
+      "email" => Faker::Internet.email,
+      "website" => "#{"www." + Faker::Name.middle_name + ".com"}",
+      "fein" => Faker::Company.ein,
       "monthly_revenue" => "Less than $5,000",
       "industry_name" => "Laundry and dry cleaning services",
       "current_address_attributes" => {
-        "street1" => "string",
-        "street2" => "string",
-        "city" => "string",
-        "state" => "AK",
-        "zip" => "00112"
+        "street1" => Faker::Address.street_address,
+        "street2" => Faker::Address.secondary_address,
+        "city" => Faker::Address.city,
+        "state" => Faker::Address.state_abbr,
+        "zip" => Faker::Address.zip
       }
     },
     "loan_attributes" => {
-      "company_name" => "string",
-      "daily_payment_amount" => 0,
-      "balance" => 0
+      "company_name" => Faker::Company.name,
+      "daily_payment_amount" => Faker::Number.between(1, 5000),
+      "balance" => Faker::Number.between(1000, 10000).to_f
     },
     "application_attributes" => {
       "has_current_loan" => true,
       "applicant_is_owner" => true,
       "loan_use" => "Debt Refinancing",
-      "capital_needed" => "string",
-      "owner_1_percent_ownership" => 0,
+      "capital_needed" => Faker::Number.between(5000, 60000).to_s,
+      "owner_1_percent_ownership" => Faker::Number.between(1, 99),
       "owner_2_percent_ownership" => 0,
-      "reference_id" => "string"
+      "reference_id" => Faker::Number.between(1, 100000000).to_s,
+      "notes" => Faker::TvShows::FamilyGuy.quote
     }
   }
 }.to_json
+
+puts "json: #{json}"
 
 response = HTTParty.post(
   "https://api-staging.forwardfinancing.com/v1/lead",
@@ -75,6 +79,7 @@ response = HTTParty.post(
   },
   body: json
 )
+puts "response: #{response}"
 
 # If the response was 201 it worked
 if response.code == 201
